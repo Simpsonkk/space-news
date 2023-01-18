@@ -7,10 +7,10 @@ import { Article } from '../types/article.model';
 import { formatDate } from '../utils';
 import DateIcon from '../images/icons/date-icon';
 import { useNavigate } from 'react-router-dom';
-import { APIRoute } from '../consts';
+import { APIRoute, AppRoute } from '../consts';
 import ArrowRightIcon from '../images/icons/arrow-right-icon';
 import { useAppSelector } from '../hooks';
-import { getSearchSymbols } from '../store/slices/article-data/selectors';
+import { getTermSearch } from '../store/slices/article-data/selectors';
 
 type ArticleCardProps = {
   articleData: Article;
@@ -20,7 +20,7 @@ function ArticleCard({
   articleData: { id, imageUrl, publishedAt, summary, title },
 }: ArticleCardProps) {
   const navigate = useNavigate();
-  const searchSymbols = useAppSelector(getSearchSymbols);
+  const termSearch = useAppSelector(getTermSearch);
 
   const getHighlightedText = (text: string, highlight: string) => {
     const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
@@ -36,7 +36,7 @@ function ArticleCard({
 
   return (
     <Card
-      onClick={() => navigate(`${APIRoute.Articles}/${id}`)}
+      onClick={() => navigate(`${AppRoute.Main}/${APIRoute.Articles}/${id}`)}
       sx={{ width: '400px', height: '500px', margin: 0, marginBottom: '45px' }}
     >
       <CardActionArea sx={{ height: '100%' }}>
@@ -46,11 +46,11 @@ function ArticleCard({
         </Typography>
         <CardContent sx={{ height: '100%' }}>
           <Typography fontSize="24px" lineHeight="29px" mb={1}>
-            {getHighlightedText(title.slice(0, 45), searchSymbols)}
+            {getHighlightedText(title.slice(0, 45), termSearch)}
             {title.length > 45 && '...'}
           </Typography>
           <Typography height="95px">
-            {getHighlightedText(summary.slice(0, 100), searchSymbols)}
+            {getHighlightedText(summary.slice(0, 100), termSearch)}
             {summary.length > 100 && '...'}
           </Typography>
           <Typography fontWeight="700">

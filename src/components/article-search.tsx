@@ -1,16 +1,18 @@
 import { ChangeEvent, useState } from 'react';
 import { Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import ArticleSearchIcon from '../images/icons/article-search-icon';
-import { useAppDispatch } from '../hooks';
-import { loadSearchSymbols } from '../store/slices/article-data/article-data';
+import { useAppDispatch, useAppSelector } from '../hooks';
+import { loadTermSearch } from '../store/slices/article-data/article-data';
 import { useDebounce } from '../hooks/useDebounce';
+import { getTermSearch } from '../store/slices/article-data/selectors';
 
 function ArticleSearchForm() {
-  const [inputValue, setInputValue] = useState('');
+  const defaultValue = useAppSelector(getTermSearch);
+  const [inputValue, setInputValue] = useState(defaultValue);
   const dispatch = useAppDispatch();
 
   const makeRequest = useDebounce(() => {
-    dispatch(loadSearchSymbols(inputValue));
+    dispatch(loadTermSearch(inputValue.trim()));
   }, 700);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

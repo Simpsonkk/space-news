@@ -1,6 +1,6 @@
 export enum AppRoute {
-  Main = '/',
-  Article = '/articles/:id',
+  Main = '/space-news',
+  Article = '/space-news/articles/:id',
   NotFound = '*',
 }
 

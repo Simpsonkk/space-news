@@ -1,4 +1,4 @@
 export type SearchParams = {
-  searchSymbols: string, 
-  pageAmount: number,
-}
+  termSearch: string;
+  pageNumber: number;
+};
