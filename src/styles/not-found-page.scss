@@ -1,0 +1,30 @@
+.page-not-found {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../images/not-found-background.webp');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
+  &__button {
+    position: absolute;
+    top: 53%;
+    left: 40%;
+    transform: rotate(-12deg);
+    width: 150px;
+    height: 50px;
+    border-color: blue;
+    color: white;
+    background-color: rgb(73, 28, 101);
+    border-radius: 5px;
+
+    &:hover {
+      box-shadow: 0 0 10px 0 rgb(179, 17, 211);
+    }
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
