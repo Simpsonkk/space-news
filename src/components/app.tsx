@@ -1,16 +1,18 @@
-import MainPage from './main-page';
+import '../assets/styles/app.scss';
+
 import { Route, Routes } from 'react-router-dom';
-import { AppRoute } from '../consts';
-import ArticlePage from './article-page';
-import NotFoundPage from './not-found-page';
-import '../styles/app.scss';
+
+import { AppRoute } from '../enums';
+import ArticlePage from '../pages/article-page';
+import MainPage from '../pages/main-page';
+import NotFoundPage from '../pages/not-found-page';
 
 function App() {
   return (
     <Routes>
       <Route path={AppRoute.Main} element={<MainPage />} />
       <Route path={AppRoute.Article} element={<ArticlePage />} />
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path={AppRoute.NotFound} element={<NotFoundPage />} />
     </Routes>
   );
 }

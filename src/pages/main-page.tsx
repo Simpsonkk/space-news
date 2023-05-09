@@ -1,6 +1,7 @@
 import { Container } from '@mui/material';
-import ArticleList from './article-list';
-import ArticleSearch from './article-search';
+
+import ArticleList from '../components/article-list';
+import ArticleSearch from '../components/article-search';
 
 function MainPage() {
   return (

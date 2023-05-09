@@ -1,62 +1,52 @@
-import { useAppDispatch, useAppSelector } from '../hooks';
-import {
-  getArticles,
-  getArticlesCount,
-  getTermSearch,
-} from '../store/slices/article-data/selectors';
-import ArticleCard from './article-card';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider/Divider';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { useEffect, useState } from 'react';
-import {
-  fetchCountArticlesAction,
-  fetchFilteredArticlesAction,
-} from '../store/actions/api-actions';
-import { loadArticles } from '../store/slices/article-data/article-data';
+import { useInView } from 'react-intersection-observer';
+
+import Divider from '@mui/material/Divider/Divider';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { useArticle } from '../context/article-search-context';
+import { useDebounce } from '../hooks/useDebounce';
+import { ArticleService } from '../services/article-service';
+import ArticleCard from './article-card';
+import Loader from './loader';
 
 function ArticleList() {
-  const [pageNumber, setPageAmount] = useState(1);
-  const articleList = useAppSelector(getArticles);
-  const articleCount = useAppSelector(getArticlesCount);
+  const [articleNumber, setArticleNumber] = useState<number>(0);
+  const { termSearch } = useArticle();
+  const debouncedSearchTerm = useDebounce(termSearch.trim(), 600);
+  const { ref, inView } = useInView();
 
-  const dispatch = useAppDispatch();
-  const termSearch = useAppSelector(getTermSearch);
-
-  const hasMore = articleCount - pageNumber * 12 > 0;
+  const { isLoading, data, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
+    queryKey: ['article', debouncedSearchTerm],
+    queryFn: ({ pageParam = 1 }) =>
+      ArticleService.getFiltered({ termSearch: debouncedSearchTerm, pageNumber: pageParam }),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.results.length ? allPages.length + 1 : undefined,
+    onSuccess: (data) => setArticleNumber(data.pages[0].count),
+  });
 
   useEffect(() => {
-    dispatch(fetchFilteredArticlesAction({ termSearch, pageNumber }));
-  }, [dispatch, termSearch, pageNumber]);
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage]);
 
-  useEffect(() => {
-    setPageAmount(1);
-    dispatch(loadArticles(null));
-    dispatch(fetchCountArticlesAction(termSearch));
-  }, [dispatch, termSearch]);
-
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <>
       <Typography fontWeight={600} mt={'45px'}>
-        Results: {hasMore ? articleCount : articleList.length}
+        Results: {articleNumber}
       </Typography>
       <Divider />
-      <InfiniteScroll
-        next={() => {
-          setPageAmount((prev) => prev + 1);
-        }}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-        dataLength={articleList.length}
-        endMessage={<p>Yay! You have seen it all</p>}
-      >
-        <Grid container mt={5} justifyContent="space-between">
-          {articleList.map((article) => (
-            <ArticleCard key={article.id} articleData={article} />
-          ))}
-        </Grid>
-      </InfiniteScroll>
+      <Grid container mt={5} columnGap={5.5}>
+        {data?.pages.map((page) =>
+          page.results.map((article) => <ArticleCard key={article.id} articleData={article} />)
+        )}
+      </Grid>
+      <p ref={ref}>{isFetchingNextPage ? 'Loading more...' : 'Nothing more to load'}</p>
     </>
   );
 }

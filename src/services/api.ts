@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 
-const BASE_URL = 'https://api.spaceflightnewsapi.net/v3/';
+const BASE_URL = 'https://api.spaceflightnewsapi.net/v4/articles';
 const REQUEST_TIMEOUT = 5000;
 
 export const createAPI = (): AxiosInstance => {
